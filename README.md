@@ -1,8 +1,8 @@
-# baidumap-demos
+# baidumap-demons
 
 ### 图层管理
 
-百度地图对于overlay进行集中管理的对象，或者说没有图层的概念，这里需要我自定义个一个图层或者说Collection容器。
+百度地图对于overlay没有进行集中管理的对象，或者说没有图层的概念，这里需要我自定义个一个图层或者说Collection容器。
 
 需求 | 处理
 ---|---

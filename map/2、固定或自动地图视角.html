@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2、固定或自动地图视角</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
+</head>
+<body>
+   
+   <p>
+       <button onclick="getZoomAndCenter()">获取当前zoom级别和中心点(控制台打印结果)</button>
+       <button onclick="setCenterAndZoom({lat: 31.243711578734043,lng: 121.49903613842406}, 15)">回到之前保存的视角</button>
+   </p>
+    
+    <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
+    
+    
+<script>
+
+/* --------- 制作地图 --------- */
+let map = new BMap.Map("map");
+map.enableScrollWheelZoom(); // 以便滚轮缩放有效
+map.centerAndZoom("武汉", 13); // 设定武汉，zoom层级为13
+
+function getZoomAndCenter () {
+    let zoom = map.getZoom();
+    let {lng, lat} = map.getCenter();
+    let center = {lng, lat};
+    console.log({zoom, center});
+}
+
+function setCenterAndZoom (center, zoom) {
+    let p = new BMap.Point(center.lng, center.lat);
+    map.centerAndZoom(p, zoom);
+}
+</script>
+</body>
+</html>

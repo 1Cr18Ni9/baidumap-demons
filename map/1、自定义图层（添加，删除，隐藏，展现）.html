@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1、自定义图层（添加，删除，隐藏，展现）</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
+</head>
+<body>
+    <p>
+        点击地图向<strong>当前图层</strong>添加点，删除点需要使用控制台。
+    </p>
+    <p>当前图层为：
+       <select id="select">
+           <option value="layer1">图层1</option>
+           <option value="layer2">图层2</option>
+       </select>
+       
+        <button id="hide">隐藏图层</button>
+        <button id="show">显示图层</button>
+        <button id="viewAll">定位当前层</button>
+    </p>
+     
+     <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
+
+    
+    
+<script>
+
+// 百度地图对于overlay没有进行集中管理的对象，或者说没有图层的概念，
+// 这里需要我自定义个一个图层或者说Collection容器。
+// 这个只是一个demo，实际的图层后续会加入更多特性
+
+function Layer (bmap, options) {
+    let opt = Object.assign({
+        name: "undefined",
+        member: []
+    }, options || {});
+
+    // 后续使用shordid插件做hash值，这里不变展示
+    this.$id = opt.id || ("L" + Math.random());
+    this.name = opt.name;
+    this.member = opt.member; // 存放所有的overlay
+    this.bmap = bmap; // 百度地图实例
+}
+Layer.prototype = {
+    initialize: function () {},
+    hide: function () {
+        let i;
+        for (i = 0; i < this.member.length; i++) {
+            this.member[i].hide();
+        }
+    },
+    show: function () {
+        let i;
+        for (i = 0; i < this.member.length; i++) {
+            this.member[i].show();
+        }
+    },
+    remove: function (id) {
+        let index, m;
+        index = this.findIndex(id);
+        if (id && (index > -1)) {
+            m = this.member.splice(index, 1)[0];
+            this.bmap.removeOverlay(m);
+        }
+    },
+    add: function (overlay) {
+        this.bmap.addOverlay(overlay);
+        this.member.push(overlay);
+    },
+    destroy: function () {
+        let i, m;
+        for (i = 0; i < this.member.length; i++) {
+            m = this.member[i];
+            this.bmap.removeOverlay(m);
+        }
+        this.member = [];
+    },
+    findIndex: function (id) {
+        return this.member.findIndex(m => m.$id === id);
+    },
+    find: function (id) {
+        return this.member.find(m => m.$id === id);
+    },
+    setName: function (name) {
+        this.name = name;
+    },
+    viewAll: function () {
+        if (!this.member.length) { return; }
+        
+        let points = this.member.map(m => m.getPosition());
+        this.bmap.setViewport(points, { enableAnimation: true });
+    }
+}
+
+/**
+ * 这里做一个装饰函数，不去弄自定义marker class
+ * 原有构建函数：Marker(point: Point, opts: MarkerOptions)
+ * @param {Array} point: 这里和原有构建函数的Point不一样，这是是数组 [lng, lat] 
+ * @param {Object} opts: 和原有构建函数完全一致
+ */
+function createMarker (point, opts) {
+    let p = new BMap.Point(point[0], point[1]);
+    let m = new BMap.Marker(p, opts || {});
+    m.$id = ("M" + Math.random());
+
+    return m;
+}
+
+
+/* --------- 制作地图 --------- */
+let map = new BMap.Map("map");
+map.enableScrollWheelZoom(); // 以便滚轮缩放有效
+map.centerAndZoom("武汉", 13); // 设定武汉，zoom层级为13
+
+// 实例2个图层
+let layers = {
+    layer1: new Layer(map),
+    layer2: new Layer(map)
+}
+let currentLayer = layers.layer1; // 当前图层
+layers.layer1.setName("图层1");
+layers.layer2.setName("图层2");
+
+map.addEventListener("click", function ({type, target, point, pixel, overlay}) {
+    // console.log({
+    //     type, target, point, pixel, overlay
+    // });
+    //console.log(overlay instanceof BMap.Marker);
+    
+    let marker = createMarker([point.lng, point.lat]);
+    currentLayer.add(marker);
+});
+
+
+// 控件事件：隐藏/显示
+document.getElementById("hide").addEventListener("click", () => currentLayer.hide());
+document.getElementById("show").addEventListener("click", () => currentLayer.show());
+document.getElementById("viewAll").addEventListener("click", () => currentLayer.viewAll());
+document.getElementById("select").addEventListener("change", function () {
+    currentLayer = layers[this.value]
+});
+
+</script>
+</body>
+</html>
