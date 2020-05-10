@@ -13,6 +13,10 @@
            margin-left: 1em;
        }
    </style>
+   
+
+   <button id="point" onclick="loacatePoint(114.29663815274321,30.56613252269125)">急速定位到[114.29663815274321,30.56613252269125]</button>
+
     <form id="form">
         <label>
             <select name="shape">
@@ -151,6 +155,11 @@ function confirmFn (e) {
     pointCollection.setStyles(opt);
 }
 
+function loacatePoint (lng, lat) {
+    map.setCenter(new BMap.Point(lng, lat));
+
+    markerOnClick({point: new BMap.Point(lng, lat)});
+}
 
 </script>
 </body>

@@ -1,12 +1,3 @@
-/**
- * 百度文档： http://lbsyun.baidu.com/cms/jsapi/reference/jsapi_reference_3_0.html#a3b20
- * 
- * 这次的数据绑定恐怕只能用在Point对象上，
- * 在它身上绑定一个id，这个id用于后续查询
- * 
- */
-
-
 /* --------- 制作地图 --------- */
 let map = new BMap.Map("map", {enableMapClick: false});
 
@@ -29,35 +20,19 @@ let geoPos = [
     [114.31273578748203,30.636755494361225]
 ];
 
-let shape = {
-    circle:  BMAP_POINT_SHAPE_CIRCLE,
-    star:    BMAP_POINT_SHAPE_STAR,
-    square:  BMAP_POINT_SHAPE_SQUARE,
-    rhombus: BMAP_POINT_SHAPE_RHOMBUS
-}
+// 后面实际上用图层来管理
+let markers = [];
 
-let shape_size = {
-    samller: BMAP_POINT_SIZE_SMALLER,
-    small: BMAP_POINT_SIZE_SMALL,
-    normal: BMAP_POINT_SIZE_NORMAL,
-    big: BMAP_POINT_SIZE_BIG
-}
+let icon = window.symbols.triangle();
+markers = geoPos.map(p => {
+    let point = new BMap.Point(p[0], p[1]);
+    let m = new BMap.Marker(point, {icon: icon});
 
-// 这里模拟数据绑定，绑定一个id
-let points = geoPos.map(p => {
-    let np = new BMap.Point(p[0], p[1]);
-    np.id = Math.random();
-    return np;
+    map.addOverlay(m);
+    m.addEventListener("click", markerOnClick);
+
+    return m;
 });
-let pointCollection = new BMap.PointCollection(points, {
-    shape: shape.rhombus,
-    color: "red",
-    size: shape_size.big
-});
-
-map.addOverlay(pointCollection);
-
-pointCollection.addEventListener("click", markerOnClick);
 
 let popup = new BMap.InfoWindow(
     '<div style="width:100px;height:100px;line-height:100px;text-align:center;">Loading....</div>', 
@@ -75,10 +50,14 @@ popup.addEventListener("close", function () {
 });
 
 
-function markerOnClick ({type, target, point}) {
-    console.log(point);
+function markerOnClick () {
+    // 需要指出marker.openInfoWindow这个接口根本不管用
+    // marker.openInfoWindow(popup)
+    
+    // 这里我初步想法是获取marker嵌入的信息，
+    // 点击后去后台获取信息并通过popup.setContent展现出来
 
-    map.openInfoWindow(popup, point);
+    map.openInfoWindow(popup, this.getPosition());
     setTimeout(() => {
         let ul = document.createElement("ul");
         ul.classList.add(".abc");
@@ -94,17 +73,36 @@ controls.confirm.onclick = confirmFn;
 function confirmFn (e) {
     e.preventDefault();
     
-    let sh = shape[controls.shape.value];
-    let size = shape_size[controls.size.value];
-    let color = controls.color.value
+    let shape = controls.shape.value;
 
+    // 注意从控件获取的值都是字符串，有些参数需要转化
     let opt = {
-        shape: sh,
-        size: size,
-        color: color
+        fillColor: controls.fillColor.value,
+        strokeColor: controls.strokeColor.value,
+        fillOpacity: +controls.fillOpacity.value,
+        scale: +controls.scale.value
     };
-    console.log(opt);
-    pointCollection.setStyles(opt);
+
+    let newSymbol = window.symbols[shape](opt);
+
+    markers.forEach(m => m.setIcon(newSymbol));
 }
 
 
+function loacatePoint (lng, lat) {
+    let box = map.getContainer().getBoundingClientRect();
+    let clientX = box.x + (box.width / 2), 
+        clientY = box.y + (box.height / 2) - 1;
+    map.setCenter(new BMap.Point(lng, lat));
+    let event = new Event("click", {
+        bubbles: true,
+        cancelable: true,
+        clientX,
+        clientY
+    });
+
+    // 确切的说，应该通过id进行查找，找到marker,然后：
+    // 这里有很大的不确定性：因为Marker本身继承了EventTarget
+    // 将来这个接口改了的话，我这里就不灵了
+    markers[2].dispatchEvent(event);
+}

@@ -12,6 +12,8 @@
        label + label { margin-left: 1em; }
    </style>
 
+    <button id="point" onclick="loacatePoint(114.29663815274321,30.56613252269125)">急速定位到[114.29663815274321,30.56613252269125]</button>
+    
     <form id="form">
         <label>
             <select name="shape">
@@ -46,10 +48,9 @@ map.enableScrollWheelZoom(); // 以便滚轮缩放有效
 
 
 
-// map.addEventListener("click", ({point}) => {
-//     console.log(point);
-//     ps.push([point.lng, point.lat]);
-// });
+map.addEventListener("click", ({point}) => {
+    console.log(point);
+});
 
 let geoPos = [
     [114.2563940658962,30.587026422457996],
@@ -127,6 +128,19 @@ function confirmFn (e) {
 
     markers.forEach(m => m.setIcon(newSymbol));
 }
+
+
+function loacatePoint (lng, lat) {
+
+    let p = new BMap.Point(lng, lat);
+    map.setCenter(p);
+
+    markerOnClick.call({
+        getPosition: () => p
+    });
+}
+
+
 
 </script>
 
