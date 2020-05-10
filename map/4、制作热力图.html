@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>4、制作热力图</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
+</head>
+<body>
+   
+    <div>
+        <button onclick="toggle()">显示/隐藏</button>
+        <form id="form">
+            <label>
+                <input type="range" name="radius" 
+                    min="10" max="30" value="20">
+                半径
+            </label>
+            <input type="text" name="start" value="blue">
+            <input type="text" name="middle" value="yellow">
+            <input type="text" name="end" value="rgb(255, 0, 0)">
+            <button id="confirm">修改配置</button>
+        </form>
+    </div>
+    
+    <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
+    
+
+<script>
+
+/**
+ * 这个热力图有一个坑，这一点在文档内并未指出
+ * 如果直接按照其文档的操作很有可能导致报错：
+ * https://www.cnblogs.com/webttt/p/11926025.html
+ * 所以这里采用了异步加载的方式，等待页面完全加载后执行
+ * 
+ * BMapLib.HeatmapOverlay
+ * http://api.map.baidu.com/library/Heatmap/2.0/docs/symbols/BMapLib.HeatmapOverlay.html
+ * 
+ * addDataPoint(lng, lat, count) 添加热力图的详细坐标点
+ * setDataSet(data) 设置热力图展现的详细数据, 实现之后,即可以立刻展现
+ * setOptions(options) 设置热力图展现的配置
+ * toggle() 更改热力图的展现或者关闭
+ * 
+ */
+
+/* --------- 制作地图 --------- */
+let map = new BMap.Map("map");
+
+map.centerAndZoom("武汉", 12); // 设定武汉，zoom层级为13
+map.enableScrollWheelZoom(); // 以便滚轮缩放有效
+
+
+let geoPoint = [
+    {"lng":114.274863,"lat":30.592623,"count":44},
+    {"lng":114.260203,"lat":30.594364,"count":78},
+    {"lng":114.271989,"lat":30.600581,"count":15},
+    {"lng":114.2786,"lat":30.608538,"count":7},
+    {"lng":114.2832,"lat":30.616743,"count":99},
+    {"lng":114.293261,"lat":30.626937,"count":67},
+    {"lng":114.318844,"lat":30.628428,"count":80},
+    {"lng":114.317982,"lat":30.626191,"count":24},
+    {"lng":114.31367,"lat":30.617986,"count":40},
+    {"lng":114.309358,"lat":30.607295,"count":77},
+    {"lng":114.302172,"lat":30.60257,"count":63},
+    {"lng":114.297285,"lat":30.600581,"count":86},
+    {"lng":114.294698,"lat":30.600083,"count":70},
+    {"lng":114.294123,"lat":30.6063,"count":65},
+    {"lng":114.295273,"lat":30.611522,"count":68},
+    {"lng":114.296997,"lat":30.613262,"count":55},
+    {"lng":114.308208,"lat":30.610776,"count":70},
+    {"lng":114.316257,"lat":30.615251,"count":92},
+    {"lng":114.317407,"lat":30.62271,"count":77},
+    {"lng":114.294985,"lat":30.618732,"count":66},
+    {"lng":114.289236,"lat":30.61376,"count":89},
+    {"lng":114.284924,"lat":30.610776,"count":45},
+    {"lng":114.280612,"lat":30.612268,"count":50},
+    {"lng":114.280612,"lat":30.612516,"count":71},
+    {"lng":114.27242,"lat":30.617489,"count":25},
+    {"lng":114.275726,"lat":30.620224,"count":80},
+    {"lng":114.275726,"lat":30.620845,"count":47},
+    {"lng":114.274001,"lat":30.625321,"count":74},
+    {"lng":114.270695,"lat":30.616122,"count":74},
+    {"lng":114.265808,"lat":30.613138,"count":35},
+    {"lng":114.294267,"lat":30.624948,"count":32},
+    {"lng":114.362107,"lat":30.61177,"count":85},{"lng":114.375617,"lat":30.600581,"count":36},{"lng":114.377629,"lat":30.589887,"count":75},{"lng":114.333648,"lat":30.588395,"count":40},{"lng":114.342847,"lat":30.592125,"count":9},{"lng":114.37648,"lat":30.598094,"count":4},{"lng":114.343709,"lat":30.610527,"count":5},{"lng":114.350033,"lat":30.614008,"count":99},{"lng":114.353195,"lat":30.615003,"count":71},{"lng":114.369293,"lat":30.582426,"count":58},{"lng":114.366993,"lat":30.571979,"count":83},{"lng":114.368143,"lat":30.590633,"count":9},{"lng":114.357507,"lat":30.563521,"count":46},{"lng":114.352908,"lat":30.562526,"count":45},{"lng":114.342847,"lat":30.558794,"count":24},{"lng":114.329049,"lat":30.554316,"count":61},{"lng":114.334223,"lat":30.532917,"count":5},{"lng":114.333648,"lat":30.523958,"count":38},{"lng":114.323587,"lat":30.523461,"count":13},{"lng":114.300878,"lat":30.523709,"count":77},{"lng":114.30749,"lat":30.529433,"count":64},{"lng":114.312951,"lat":30.533166,"count":70},{"lng":114.315826,"lat":30.543617,"count":6},{"lng":114.324162,"lat":30.540383,"count":93},{"lng":114.338823,"lat":30.536152,"count":68},{"lng":114.340547,"lat":30.529184,"count":26},{"lng":114.338823,"lat":30.523709,"count":80},{"lng":114.318988,"lat":30.520474,"count":91},{"lng":114.316401,"lat":30.521967,"count":35},{"lng":114.315826,"lat":30.53242,"count":84},{"lng":114.316976,"lat":30.534162,"count":61},{"lng":114.306915,"lat":30.534162,"count":57},{"lng":114.304903,"lat":30.534659,"count":19},{"lng":114.314101,"lat":30.545608,"count":31},{"lng":114.315539,"lat":30.541627,"count":42},{"lng":114.326749,"lat":30.539636,"count":49},{"lng":114.332499,"lat":30.532171,"count":100},{"lng":114.334223,"lat":30.527194,"count":47}];
+
+
+var heatmapOverlay;
+window.onload = () => {
+    heatmapOverlay = new BMapLib.HeatmapOverlay({"radius":20});
+    map.addOverlay(heatmapOverlay);
+    heatmapOverlay.setDataSet({ data:geoPoint, max:100 });
+};
+
+
+function toggle () {
+    heatmapOverlay.toggle();
+}
+
+function confirm (event) {
+    event.preventDefault();
+
+    // 从控件上获取值并执行配置
+    // 可配置的参数有：radius, visible, gradient和opacity
+    let inputs = document.getElementById("form").elements;
+    heatmapOverlay.setOptions({
+        radius: +inputs.radius.value,
+        gradient: {
+            "0":   inputs.start.value,
+            "0.5": inputs.middle.value,
+            "1":   inputs.end.value
+        }
+    });
+}
+
+document.getElementById("confirm").onclick = confirm;
+
+
+
+</script>
+
+</body>
+</html>

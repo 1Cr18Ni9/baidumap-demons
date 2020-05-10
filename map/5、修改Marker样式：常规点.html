@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Main Test Page</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
+</head>
+<body>
+   <style>
+       label + label { margin-left: 1em; }
+   </style>
+
+    <form id="form">
+        <label>
+            <select name="shape">
+                <option value="circle">circle</option>
+                <option value="cross" selected>cross</option>
+                <option value="diamond">diamond</option>
+                <option value="square">square</option>
+                <option value="star">star</option>
+                <option value="triangle">triangle</option>
+            </select>
+            形状
+        </label>
+        <label><input type="text" name="fillColor" value="#f11"> 填充色</label>
+        <label><input type="text" name="strokeColor" value="white"> 轮廓色</label>
+        <label><input type="range" name="fillOpacity" max="1" min="0" step="0.1" value="0.8"> 填充透明度</label>
+        <label><input type="number" name="scale" step="0.1" value="1"> 比例</label> 
+
+        <div><button name="confirm">确认</button></div>
+    </form>
+    
+    <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
+    
+
+<script type="text/javascript" src="./symbols.js"></script>
+<script type="text/javascript">
+
+/* --------- 制作地图 --------- */
+let map = new BMap.Map("map", {enableMapClick: false});
+
+map.centerAndZoom("武汉", 12); // 设定武汉，zoom层级为13
+map.enableScrollWheelZoom(); // 以便滚轮缩放有效
+
+
+
+// map.addEventListener("click", ({point}) => {
+//     console.log(point);
+//     ps.push([point.lng, point.lat]);
+// });
+
+let geoPos = [
+    [114.2563940658962,30.587026422457996],
+    [114.29663815274321,30.56613252269125],
+    [114.33285783090552,30.580062294440328],
+    [114.29893781484876,30.6108995960432],
+    [114.26156830563367,30.614380604062436],
+    [114.31273578748203,30.636755494361225]
+];
+
+// 后面实际上用图层来管理
+let markers = [];
+
+let icon = window.symbols.triangle();
+markers = geoPos.map(p => {
+    let point = new BMap.Point(p[0], p[1]);
+    let m = new BMap.Marker(point, {icon: icon});
+
+    map.addOverlay(m);
+    m.addEventListener("click", markerOnClick);
+
+    return m;
+});
+
+let popup = new BMap.InfoWindow(
+    '<div style="width:100px;height:100px;line-height:100px;text-align:center;">Loading....</div>', 
+    {
+    width: 0,
+    height: 0,
+    maxWidth: 500,
+    enableAutoPan: true,
+    enableCloseOnClick: true
+});
+
+// 每次关闭设定静态内容，不如“Loading...”
+popup.addEventListener("close", function () {
+    this.setContent('<div style="width:100px;height:100px;line-height:100px;text-align:center;">Loading....</div>')
+});
+
+
+function markerOnClick () {
+    // 需要指出marker.openInfoWindow这个接口根本不管用
+    // marker.openInfoWindow(popup)
+    
+    // 这里我初步想法是获取marker嵌入的信息，
+    // 点击后去后台获取信息并通过popup.setContent展现出来
+
+    map.openInfoWindow(popup, this.getPosition());
+    setTimeout(() => {
+        let ul = document.createElement("ul");
+        ul.classList.add(".abc");
+        ul.innerHTML = `<li>a</li><li>b</li><li>c</li>`;
+        popup.setContent(ul);
+    }, 1500);
+    
+}
+
+let controls = document.getElementById("form").elements;
+controls.confirm.onclick = confirmFn;
+
+function confirmFn (e) {
+    e.preventDefault();
+    
+    let shape = controls.shape.value;
+
+    // 注意从控件获取的值都是字符串，有些参数需要转化
+    let opt = {
+        fillColor: controls.fillColor.value,
+        strokeColor: controls.strokeColor.value,
+        fillOpacity: +controls.fillOpacity.value,
+        scale: +controls.scale.value
+    };
+
+    let newSymbol = window.symbols[shape](opt);
+
+    markers.forEach(m => m.setIcon(newSymbol));
+}
+
+</script>
+
+</body>
+</html>

@@ -1,3 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Main Test Page</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
+</head>
+<body>
+   <style>
+       label + label {
+           margin-left: 1em;
+       }
+   </style>
+    <form id="form">
+        <label>
+            <select name="shape">
+                <option value="circle">circle</option>
+                <option value="star">star</option>
+                <option value="square">square</option>
+                <option value="rhombus">rhombus</option>
+            </select>
+            形状
+        </label>
+        <label>
+            <select name="size">
+                <option value="samller">samller</option>
+                <option value="small">small</option>
+                <option value="normal">normal</option>
+                <option value="big" selected>big</option>
+            </select>
+            尺寸
+        </label>
+        <label><input type="text" name="color" value="#f11">颜色</label>
+
+        <div><button name="confirm">确认</button></div>
+    </form>
+    
+    <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
+    
+
+<script type="text/javascript">
+
 /**
  * 百度文档： http://lbsyun.baidu.com/cms/jsapi/reference/jsapi_reference_3_0.html#a3b20
  * 
@@ -69,7 +113,7 @@ let popup = new BMap.InfoWindow(
     enableCloseOnClick: true
 });
 
-// 每次关闭设定静态内容，不如“Loading...”
+// 每次关闭设定静态内容，比如“Loading...”
 popup.addEventListener("close", function () {
     this.setContent('<div style="width:100px;height:100px;line-height:100px;text-align:center;">Loading....</div>')
 });
@@ -108,3 +152,6 @@ function confirmFn (e) {
 }
 
 
+</script>
+</body>
+</html>

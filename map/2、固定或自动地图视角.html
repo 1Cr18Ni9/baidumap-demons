@@ -15,9 +15,8 @@
     
     <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
     
-    
+<script type="text/javascript" src="./icons.js"></script>
 <script>
-
 /* --------- 制作地图 --------- */
 let map = new BMap.Map("map");
 map.enableScrollWheelZoom(); // 以便滚轮缩放有效
@@ -34,6 +33,13 @@ function setCenterAndZoom (center, zoom) {
     let p = new BMap.Point(center.lng, center.lat);
     map.centerAndZoom(p, zoom);
 }
+
+let p = new BMap.Point(114.31158595642933, 30.598466503263325);
+let marker = new BMap.Marker(p, {
+    icon: window.icons.circle
+});
+map.addOverlay(marker);
+
 </script>
 </body>
 </html>

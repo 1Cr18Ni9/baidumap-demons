@@ -5,17 +5,41 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Main Test Page</title>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
 </head>
 <body>
-   
-   <p>
-       <button onclick="getZoomAndCenter()">获取当前zoom级别和中心点(控制台打印结果)</button>
-       <button onclick="setCenterAndZoom({lat: 31.243711578734043,lng: 121.49903613842406}, 15)">回到之前保存的视角</button>
-   </p>
+   <style>
+       label + label {
+           margin-left: 1em;
+       }
+   </style>
+    <form id="form">
+        <label>
+            <select name="shape">
+                <option value="circle">circle</option>
+                <option value="star">star</option>
+                <option value="square">square</option>
+                <option value="rhombus">rhombus</option>
+            </select>
+            形状
+        </label>
+        <label>
+            <select name="size">
+                <option value="samller">samller</option>
+                <option value="small">small</option>
+                <option value="normal">normal</option>
+                <option value="big">big</option>
+            </select>
+            尺寸
+        </label>
+        <label><input type="text" name="color" value="#f11">颜色</label>
+
+        <div><button name="confirm">确认</button></div>
+    </form>
     
     <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
     
-    
-    <script src="./script.js"></script>
+
+    <script type="text/javascript" src="./script.js"></script>
 </body>
 </html>
