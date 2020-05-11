@@ -5,38 +5,30 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Main Test Page</title>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
-    <script type="text/javascript" src="http://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+	<link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+	<!--加载检索信息窗口-->
+	<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js"></script>
+	<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css" />
 </head>
 <body>
-   
+
     <style>
-        label + label { margin-left: 1em; }
+        .off {
+            background-color: lightgray;
+            color: blue;
+        }
+        button {
+            background-color: red;
+            color: white;
+        }
     </style>
- 
-    <button id="point" onclick="loacatePoint(114.29663815274321,30.56613252269125)">急速定位到[114.29663815274321,30.56613252269125]</button>
+
+    <button class="off" id="toggle">开启测距</button>
+    <button onclick="clearAll()">一键清除</button>
     
-     <form id="form">
-         <label>
-             <select name="shape">
-                 <option value="circle">circle</option>
-                 <option value="cross" selected>cross</option>
-                 <option value="diamond">diamond</option>
-                 <option value="square">square</option>
-                 <option value="star">star</option>
-                 <option value="triangle">triangle</option>
-             </select>
-             形状
-         </label>
-         <label><input type="text" name="fillColor" value="#f11"> 填充色</label>
-         <label><input type="text" name="strokeColor" value="white"> 轮廓色</label>
-         <label><input type="range" name="fillOpacity" max="1" min="0" step="0.1" value="0.8"> 填充透明度</label>
-         <label><input type="number" name="scale" step="0.1" value="1"> 比例</label> 
- 
-         <div><button name="confirm">确认</button></div>
-     </form>
 
-
-    <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
+    <div id="map" style="width:800px;height:500px;margin: 2em auto;"></div>
     
 
     <script type="text/javascript" src="./map/symbols.js"></script>

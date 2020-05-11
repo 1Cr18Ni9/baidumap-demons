@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Main Test Page</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
+</head>
+<body>
+   <style>
+        input:focus {
+            background-color: red;
+        }
+   </style>
+    
+    <div>
+        <p>点选期间单击”Esc“直接退出</p>
+        <button onclick="confirm()">请在地图内框选区域</button>
+        <input id="keyword" type="text" placeholder="请输入关键词" value="咖啡">
+    </div>
+
+    <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
+    
+
+<script type="text/javascript">
+
+
+/* --------- 制作地图 --------- */
+let map = new BMap.Map("map", {enableMapClick: false});
+
+map.centerAndZoom("武汉", 12); // 设定武汉，zoom层级为13
+map.enableScrollWheelZoom(); // 以便滚轮缩放有效
+
+
+let polygon = new BMap.Polygon([], {
+    strokeColor: "blue",
+    fillColor: "red",
+    fillOpacity: 0.3,
+    strokeWeight: 2,
+    strokeStyle: "dashed",
+    enableMassClear: false,
+    enableClicking: false
+});
+map.addOverlay(polygon);
+
+
+let localSearch = new BMap.LocalSearch(
+    map, 
+    { renderOptions: {map: map, autoViewport: false} }
+);
+
+
+
+function getSquarePoints (p1, p2) {
+    
+    let bottonLeft, topRight;
+    if ((p1.lng <= p2.lng) && (p1.lat <= p2.lat)) {
+        bottonLeft = p1;
+        topRight   = p2;
+    }
+    else {
+        bottonLeft = p2;
+        topRight   = p1;
+    }
+
+    return [
+        bottonLeft,
+        new BMap.Point(bottonLeft.lng, topRight.lat),
+        topRight,
+        new BMap.Point(topRight.lng, bottonLeft.lat)
+    ];
+}
+
+
+function disableMapFn () {
+    polygon.hide();
+
+    map.disableDragging();
+    map.disableScrollWheelZoom();
+    map.setDefaultCursor("crosshair")
+}
+function enableMapFn () {
+    polygon.show();
+
+    map.enableDragging();
+    map.enableScrollWheelZoom();
+    map.setDefaultCursor("grab");
+}
+
+let textCtl = document.getElementById("keyword");
+
+function confirm () {
+    
+    let keyword = textCtl.value.trim();
+
+    if (!keyword) {
+        return textCtl.focus();
+    }
+
+    let p1, p2, pMove;
+
+    // 禁止一些操作
+    disableMapFn();
+    map.clearOverlays();
+    
+
+    // polygon显示
+    polygon.setPath([]);
+    polygon.show();
+
+    // 监控用户是否选择退出：Esc
+    function onEsc (event) {
+        if (event.keyCode == 27) {
+            escape();
+            polygon.hide();
+        }
+    }
+    
+
+    // 退出程序
+    function escape () {
+        enableMapFn();
+        window.removeEventListener("keyup", onEsc);
+        map.removeEventListener("click", onMapClick);
+        map.removeEventListener("mousemove", onMapMouseMove);
+    }
+
+    function updatePolygon (p1, p2) {
+        polygon.setPath(getSquarePoints(p1, p2));
+    }
+
+    function onMapClick ({ point }) {
+        if (p1 && p2) { return; }
+
+        if (!p1) { p1 = point; }
+        else {
+            p2 = point;
+            updatePolygon(p1, p2);
+            escape();
+            
+            localSearch.searchInBounds(keyword, polygon.getBounds());
+        }
+    }
+
+    function onMapMouseMove ({ point }) {
+        if (!p1 || (p1 && p2)) { return; } // 必须要有一个点
+
+        pMove = point;
+        updatePolygon(p1, pMove);
+    }
+
+    window.addEventListener("keyup", onEsc);
+    map.addEventListener("click", onMapClick);
+    map.addEventListener("mousemove", onMapMouseMove);
+}
+
+
+</script>
+</body>
+</html>

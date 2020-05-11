@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Main Test Page</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
+</head>
+<body>
+   
+    <style>
+        label + label { margin-left: 1em; }
+    </style>
+ 
+
+     <form id="form">
+         <label><input type="text" name="fillColor" value="#f11"> 填充色</label>
+         <label><input type="text" name="strokeColor" value="white"> 轮廓色</label>
+         <label><input type="number" name="strokeWeight" step="1" value="2"> 轮廓线宽</label>
+         <label><input type="range" name="fillOpacity" max="1" min="0" step="0.1" value="0.8"> 填充透明度</label>
+     </form>
+
+     <button onclick="confirm()">确定</button>
+
+
+    <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
+    
+
+    
+<script type="text/javascript">
+
+/* --------- 制作地图 --------- */
+let map = new BMap.Map("map", {enableMapClick: false});
+
+map.centerAndZoom("武汉", 12); // 设定武汉，zoom层级为13
+map.enableScrollWheelZoom(); // 以便滚轮缩放有效
+
+
+let geoCircles = [
+    { point: [114.2563940658962,30.587026422457996],  radius: 5000 },
+    { point: [114.29663815274321,30.56613252269125],  radius: 1000 },
+    { point: [114.33285783090552,30.580062294440328], radius: 3000 },
+    { point: [114.29893781484876,30.6108995960432],   radius: 4000 },
+    { point: [114.26156830563367,30.614380604062436], radius: 5000 },
+    { point: [114.31273578748203,30.636755494361225], radius: 2000 }
+];
+
+// 后续共真正的Layer图层管理
+let layer = [];
+
+let defaultOpt = {
+    strokeWeight: 2,
+    fillColor: "lightblue",
+    fillOpacity: 0.5
+};
+
+let makeCircles =  (circles) => {
+    circles.forEach(c => {
+        let point = new BMap.Point(c.point[0], c.point[1]);
+        let circle = new BMap.Circle(point, c.radius, defaultOpt);
+        map.addOverlay(circle);
+        layer.push(circle);
+    });
+}
+
+makeCircles(geoCircles);
+
+let inputs = document.getElementById("form").elements;
+let confirm = () => {
+    layer.forEach(c => {
+        c.setFillColor(inputs.fillColor.value);
+        c.setStrokeColor(inputs.strokeColor.value);
+        c.setStrokeWeight(+inputs.strokeWeight.value);
+        c.setFillOpacity(+inputs.fillOpacity.value)
+    });
+}
+
+</script>
+</body>
+</html>

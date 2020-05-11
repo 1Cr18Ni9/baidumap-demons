@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Main Test Page</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
+</head>
+<body>
+   
+    
+
+    <div id="map" style="width:600px;height:400px;margin: 2em auto;"></div>
+    
+
+    
+<script type="text/javascript">
+// BMap.CityListControl没有相关说明文档
+
+/* --------- 制作地图 --------- */
+let map = new BMap.Map("map", {enableMapClick: false});
+
+map.centerAndZoom("武汉", 12); // 设定武汉，zoom层级为13
+map.enableScrollWheelZoom(); // 以便滚轮缩放有效
+
+let cityListControl = new BMap.CityListControl({
+    anchor: BMAP_ANCHOR_TOP_LEFT,
+    offset: new BMap.Size(10, 20)
+});
+
+let scaleControl = new BMap.NavigationControl({
+    anchor: BMAP_ANCHOR_BOTTOM_RIGHT,
+    type: BMAP_NAVIGATION_CONTROL_ZOOM,
+    offset: new BMap.Size(10, 10)
+});
+
+map.addControl(cityListControl);
+map.addControl(scaleControl);
+
+</script>
+</body>
+</html>
