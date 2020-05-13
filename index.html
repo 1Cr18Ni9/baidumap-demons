@@ -5,33 +5,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Main Test Page</title>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
-    <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
-	<link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
-	<!--加载检索信息窗口-->
-	<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js"></script>
-	<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css" />
 </head>
 <body>
 
-    <style>
-        .off {
-            background-color: lightgray;
-            color: blue;
-        }
-        button {
-            background-color: red;
-            color: white;
-        }
-    </style>
-
-    <button class="off" id="toggle">开启测距</button>
-    <button onclick="clearAll()">一键清除</button>
-    
+    <p>
+        icon_sprites.png：
+        <img src="./icon_sprites.png" style="vertical-align:middle;border:1px solid gray;">
+        这是一个长：32 * 15，高32的png图片（这里只有14个Icon，没料了所以空着）。
+    </p>
 
     <div id="map" style="width:800px;height:500px;margin: 2em auto;"></div>
     
 
-    <script type="text/javascript" src="./map/symbols.js"></script>
     <script type="text/javascript" src="./script.js"></script>
 </body>
 </html>

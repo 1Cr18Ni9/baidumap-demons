@@ -1,3 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>关于位图Icon</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=kiluAGYX6my1xMRobFsMcEGh3lpEBCxn"></script>
+</head>
+<body>
+
+    <p>
+        icon_sprites.png：
+        <img src="./icon_sprites.png" style="vertical-align:middle;border:1px solid gray;">
+        这是一个长：32 * 15，高32的png图片（这里只有14个Icon，没料了所以空着）。
+    </p>
+
+    <div id="map" style="width:800px;height:500px;margin: 2em auto;"></div>
+    
+
+<script type="text/javascript">
+
 /**
  * 构造函数: Icon(url: String, size: Size, opts: IconOptions)
  * IconOptions: { anchor, imageOffset, infoWindowAnchor }
@@ -13,7 +34,6 @@
  *      第三个Icon的位移值：[-64, 0], 以此类推
  * 
  */
-
 
 
 /* --------- 制作地图 --------- */
@@ -61,3 +81,6 @@ points.forEach((p, index) => {
     map.addOverlay(m1);
 });
 
+</script>
+</body>
+</html>
